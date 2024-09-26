@@ -1,10 +1,14 @@
+const dotenv = require('dotenv');
 const express = require('express');
+
+dotenv.config({ path: './.env' });
 
 const app = express();
 
 app.use((_req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
 
   next();
 });
@@ -14,9 +18,10 @@ app.get('/', (req, res) => {
 });
 
 app.get('/sva', async (_req, res) => {
-  const api = 'https://sva.corp.rarus-cloud.ru/UNF/hs/api_sva/price/get';
-  const user = 'web_user';
-  const password = '1cJ7k8-c>^CsN+Yw';
+  const api = process.env.URL_SVA;
+  const user = process.env.USER;
+  const password = process.env.PASSWORD;
+
   const token = 'Basic ' + btoa(user + ':' + password);
 
   try {
