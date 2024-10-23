@@ -31,12 +31,50 @@ app.get('/', (req, res) => {
   res.send('Express is work');
 });
 
+var content = fs.readFileSync('db.json', 'utf8');
+var flowers = JSON.parse(content);
+
 // Получение данных для фронтенда
 app.get('/api/flowers', function (req, res) {
-  var content = fs.readFileSync('db.json', 'utf8');
-  var users = JSON.parse(content);
-  res.json(users);
+  res.json(flowers);
 });
+
+// Получение пагинации
+app.get('/api/flowers/paginate', paginatedResults(flowers), (req, res) => {
+  res.json(res.paginatedResults);
+});
+
+function paginatedResults(model) {
+  // middleware function
+  return (req, res, next) => {
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit);
+
+    // вычисление начального и конечного индекса
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+
+    const results = {};
+    if (endIndex < model.length) {
+      results.next = {
+        page: page + 1,
+        limit: limit,
+      };
+    }
+
+    if (startIndex > 0) {
+      results.previous = {
+        page: page - 1,
+        limit: limit,
+      };
+    }
+
+    results.results = model.slice(startIndex, endIndex);
+
+    res.paginatedResults = results;
+    next();
+  };
+}
 
 // Возврат промиса с ошибкой
 function returnPromiseError() {
@@ -74,8 +112,8 @@ const getFlowers = async () => {
   console.log('Работа сервера продолжена');
 };
 
-//Запрашивать API 1С каждые 30 минут
-setInterval(getFlowers, 1800000);
+//Запрашивать API 1С каждые 4 часа
+setInterval(getFlowers, 14400000);
 
 const port = 3456;
 
