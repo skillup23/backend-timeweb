@@ -116,7 +116,7 @@ const getFlowers = async () => {
 // getFlowers();
 
 //Запрашивать API 1С каждые полчаса
-setInterval(getFlowers, 180000);
+setInterval(getFlowers, 1800000);
 
 const port = 3456;
 
