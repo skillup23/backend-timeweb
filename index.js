@@ -88,7 +88,7 @@ const getFlowers = async () => {
   const password = "1cJ7k8-c>^CsN+Yw";
 
   const token = "Basic " + btoa(user + ":" + password);
-  console.log(token);
+  // console.log(token);
 
   try {
     const response = await fetch(api, {
@@ -116,7 +116,7 @@ const getFlowers = async () => {
 // getFlowers();
 
 //Запрашивать API 1С каждые полчаса
-setInterval(getFlowers, 1800000);
+setInterval(getFlowers, 180000);
 
 const port = 3456;
 
