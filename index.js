@@ -14,6 +14,9 @@ app.use((_req, res, next) => {
   next();
 });
 
+let content = fs.readFileSync("db.json", "utf8");
+let flowersData = JSON.parse(content);
+
 // Добавление данных в БД
 function addFlowersBD(arr) {
   var flowers = JSON.stringify(arr);
@@ -26,25 +29,30 @@ function addFlowersBD(arr) {
   });
 }
 
+function newFlowers() {
+  content = fs.readFileSync("db.json", "utf8");
+  flowersData = JSON.parse(content);
+  return console.log("Массив для запрсов API обновлен");
+}
+
 // Проверка работы Express
 app.get("/", (req, res) => {
   res.send("Express is work");
 });
 
-var content = fs.readFileSync("db.json", "utf8");
-var flowers = JSON.parse(content);
-
 // Получение данных для фронтенда
 app.get("/api/flowers", function (req, res) {
-  res.json(flowers);
+  // var content2 = fs.readFileSync("db.json", "utf8");
+  // var flowers2 = JSON.parse(content2);
+  res.json(flowersData);
 });
 
 // Получение пагинации
-app.get("/api/flowers/paginate", paginatedResults(flowers), (req, res) => {
+app.get("/api/flowers/paginate", paginatedResults(), (req, res) => {
   res.json(res.paginatedResults);
 });
 
-function paginatedResults(model) {
+function paginatedResults() {
   // middleware function
   return (req, res, next) => {
     const page = parseInt(req.query.page);
@@ -55,7 +63,7 @@ function paginatedResults(model) {
     const endIndex = page * limit;
 
     const results = {};
-    if (endIndex < model.length) {
+    if (endIndex < flowersData.length) {
       results.next = {
         page: page + 1,
         limit: limit,
@@ -69,7 +77,7 @@ function paginatedResults(model) {
       };
     }
 
-    results.results = model.slice(startIndex, endIndex);
+    results.results = flowersData.slice(startIndex, endIndex);
 
     res.paginatedResults = results;
     next();
@@ -117,6 +125,7 @@ const getFlowers = async () => {
 
 //Запрашивать API 1С каждые полчаса
 setInterval(getFlowers, 1800000);
+setInterval(newFlowers, 1860000);
 
 const port = 3456;
 
