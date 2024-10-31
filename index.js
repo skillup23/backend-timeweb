@@ -1,54 +1,54 @@
-const dotenv = require("dotenv");
-const express = require("express");
-var fs = require("fs");
+const dotenv = require('dotenv');
+const express = require('express');
+var fs = require('fs');
 
-dotenv.config({ path: "./.env" });
+dotenv.config({ path: './.env' });
 
 const app = express();
 
 app.use((_req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
 
   next();
 });
 
-let content = fs.readFileSync("db.json", "utf8");
+let content = fs.readFileSync('db.json', 'utf8');
 let flowersData = JSON.parse(content);
 
 // Добавление данных в БД
 function addFlowersBD(arr) {
   var flowers = JSON.stringify(arr);
 
-  fs.writeFile("./db.json", flowers, function (error) {
+  fs.writeFile('./db.json', flowers, function (error) {
     if (error) {
       return console.log(error);
     }
-    console.log("База данных успешна обновлена");
+    console.log('База данных успешна обновлена');
   });
 }
 
 function newFlowers() {
-  content = fs.readFileSync("db.json", "utf8");
+  content = fs.readFileSync('db.json', 'utf8');
   flowersData = JSON.parse(content);
-  return console.log("Массив для запрсов API обновлен");
+  return console.log('Массив для запрсов API обновлен');
 }
 
 // Проверка работы Express
-app.get("/", (req, res) => {
-  res.send("Express is work");
+app.get('/', (req, res) => {
+  res.send('Express is work');
 });
 
 // Получение данных для фронтенда
-app.get("/api/flowers", function (req, res) {
+app.get('/api/flowers', function (req, res) {
   // var content2 = fs.readFileSync("db.json", "utf8");
   // var flowers2 = JSON.parse(content2);
   res.json(flowersData);
 });
 
 // Получение пагинации
-app.get("/api/flowers/paginate", paginatedResults(), (req, res) => {
+app.get('/api/flowers/paginate', paginatedResults(), (req, res) => {
   res.json(res.paginatedResults);
 });
 
@@ -86,16 +86,16 @@ function paginatedResults() {
 
 // Возврат промиса с ошибкой
 function returnPromiseError() {
-  return Promise.reject(new Error("Ошибка. Что-то пошло не так..."));
+  return Promise.reject(new Error('Ошибка. Что-то пошло не так...'));
 }
 
 // Функция для вызова API
 const getFlowers = async () => {
   const api = process.env.URL_SVA;
-  const user = "web_user";
-  const password = "1cJ7k8-c>^CsN+Yw";
+  const user = 'web_user';
+  const password = '1cJ7k8-c>^CsN+Yw';
 
-  const token = "Basic " + btoa(user + ":" + password);
+  const token = 'Basic ' + btoa(user + ':' + password);
   // console.log(token);
 
   try {
@@ -112,20 +112,20 @@ const getFlowers = async () => {
     const result = await response.json();
     addFlowersBD(result);
 
-    return console.log("Данные из 1С получены");
+    return console.log('Данные из 1С получены');
   } catch (error) {
     console.log(
       `При выполнении кода произошла ошибка ${error.name} c текстом ${error.message}, но мы её обработали`
     );
   }
-  console.log("Работа сервера продолжена");
+  console.log('Работа сервера продолжена');
 };
 
 // getFlowers();
 
-//Запрашивать API 1С каждые полчаса
-setInterval(getFlowers, 1800000);
-setInterval(newFlowers, 1860000);
+//Запрашивать API 1С каждые 15 минут
+setInterval(getFlowers, 900000);
+setInterval(newFlowers, 940000);
 
 const port = 3456;
 
