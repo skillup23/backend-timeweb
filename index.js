@@ -14,6 +14,7 @@ app.use((_req, res, next) => {
   next();
 });
 
+// Получение массива с цветами из локальной БД
 let content = fs.readFileSync('db.json', 'utf8');
 let flowersData = JSON.parse(content);
 
@@ -29,6 +30,7 @@ function addFlowersBD(arr) {
   });
 }
 
+// Обновление массива с цветами
 function newFlowers() {
   content = fs.readFileSync('db.json', 'utf8');
   flowersData = JSON.parse(content);
@@ -40,14 +42,37 @@ app.get('/', (req, res) => {
   res.send('Express is work');
 });
 
-// Получение данных для фронтенда
+// Передача данных для фронтенда
 app.get('/api/flowers', function (req, res) {
-  // var content2 = fs.readFileSync("db.json", "utf8");
-  // var flowers2 = JSON.parse(content2);
   res.json(flowersData);
 });
 
-// Получение пагинации
+// Передача наименований Цветов
+app.get('/api/flowers/name', function (req, res) {
+  const nameFlowers = flowersData.map((item) => {
+    var [name, model] = item.Номенклатура.split(/\s/);
+    return name;
+  });
+
+  res.json(nameFlowers);
+});
+
+// Передача фитрованного массива Цветов
+app.get('/api/flowers/filter', function (req, res, next) {
+  const filters = req.query;
+
+  const filteredFlowers = flowersData.filter((flower) => {
+    let isValid = true;
+    for (key in filters) {
+      isValid = isValid && flower[key].includes(filters[key]);
+    }
+    return isValid;
+  });
+
+  res.send(filteredFlowers);
+});
+
+// Передача данных пагинации
 app.get('/api/flowers/paginate', paginatedResults(), (req, res) => {
   res.json(res.paginatedResults);
 });
@@ -117,6 +142,8 @@ const getFlowers = async () => {
     console.log(
       `При выполнении кода произошла ошибка ${error.name} c текстом ${error.message}, но мы её обработали`
     );
+  } finally {
+    setTimeout(newFlowers, 20000);
   }
   console.log('Работа сервера продолжена');
 };
@@ -125,7 +152,6 @@ const getFlowers = async () => {
 
 //Запрашивать API 1С каждые 15 минут
 setInterval(getFlowers, 900000);
-setInterval(newFlowers, 940000);
 
 const port = 3456;
 
