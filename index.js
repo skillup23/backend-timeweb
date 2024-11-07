@@ -15,8 +15,38 @@ app.use((_req, res, next) => {
 });
 
 // Получение массива с цветами из локальной БД
-// let content = fs.readFileSync('db.json', 'utf8');
-// let flowersData = JSON.parse(content);
+let content = fs.readFileSync('db.json', 'utf8');
+let flowersData = JSON.parse(content);
+// let flowersData = [
+//   {
+//     Номенклатура: 'Альстромерия Fashionista',
+//     Характеристика: 'L80',
+//     Единица: 'шт',
+//     Остаток: '30',
+//     ГрадацияОстатков: '1',
+//     Цена: '208',
+//     Картинка: '',
+//   },
+// ];
+
+// Добавление данных в БД
+function addFlowersBD(arr) {
+  var flowers = JSON.stringify(arr);
+
+  fs.writeFile('./db.json', flowers, function (error) {
+    if (error) {
+      return console.log(error);
+    }
+    console.log('База данных успешна обновлена');
+  });
+}
+
+// Обновление массива с цветами
+function newFlowers() {
+  content = fs.readFileSync('db.json', 'utf8');
+  flowersData = JSON.parse(content);
+  return console.log('Массив для запрсов API обновлен');
+}
 
 // Проверка работы Express
 app.get('/', (req, res) => {
@@ -102,7 +132,6 @@ const getFlowers = async () => {
   const password = '1cJ7k8-c>^CsN+Yw';
 
   const token = 'Basic ' + btoa(user + ':' + password);
-  // console.log(token);
 
   try {
     const response = await fetch(api, {
@@ -116,9 +145,9 @@ const getFlowers = async () => {
     }
 
     const result = await response.json();
-    flowersData = result;
+    // flowersData = result;
 
-    // addFlowersBD(result);
+    addFlowersBD(result);
 
     return console.log('Данные из 1С получены');
   } catch (error) {
@@ -126,7 +155,7 @@ const getFlowers = async () => {
       `При выполнении кода произошла ошибка ${error.name} c текстом ${error.message}, но мы её обработали`
     );
   } finally {
-    // setTimeout(newFlowers, 20000);
+    setTimeout(newFlowers, 10000);
   }
   console.log('Работа сервера продолжена');
 };
@@ -136,42 +165,12 @@ getFlowers();
 //Запрашивать API 1С каждые 15 минут
 setInterval(getFlowers, 900000);
 
-let flowersData = [
-  {
-    Номенклатура: 'Альстромерия Fashionista',
-    Характеристика: 'L80',
-    Единица: 'шт',
-    Остаток: '30',
-    ГрадацияОстатков: '1',
-    Цена: '208',
-    Картинка: '',
-  },
-];
-
 const port = 3456;
 
 app.listen(port, () =>
   console.log(`Server running on http://localhost:${port}`)
 );
 
-// Добавление данных в БД
-// function addFlowersBD(arr) {
-//   var flowers = JSON.stringify(arr);
-
-//   fs.writeFile('./db.json', flowers, function (error) {
-//     if (error) {
-//       return console.log(error);
-//     }
-//     console.log('База данных успешна обновлена');
-//   });
-// }
-
-// Обновление массива с цветами
-// function newFlowers() {
-//   content = fs.readFileSync('db.json', 'utf8');
-//   flowersData = JSON.parse(content);
-//   return console.log('Массив для запрсов API обновлен');
-// }
 // app.get('/sva', async (_req, res) => {
 //   const api = process.env.URL_SVA;
 //   const user = process.env.USER;
