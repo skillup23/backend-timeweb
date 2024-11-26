@@ -15,27 +15,38 @@ app.use((_req, res, next) => {
 });
 
 // Получение массива с цветами из локальной БД
-let content = fs.readFileSync('db.json', 'utf8');
-let flowersData = JSON.parse(content);
+// let content = fs.readFileSync('db.json', 'utf8');
+// let flowersData = JSON.parse(content);
+let flowersData = [
+  {
+    Номенклатура: 'Альстромерия Fashionista',
+    Характеристика: 'L80',
+    Единица: 'шт',
+    Остаток: '30',
+    ГрадацияОстатков: '1',
+    Цена: '208',
+    Картинка: '',
+  },
+];
 
 // Добавление данных в БД
-function addFlowersBD(arr) {
-  var flowers = JSON.stringify(arr);
+// function addFlowersBD(arr) {
+//   var flowers = JSON.stringify(arr);
 
-  fs.writeFile('./db.json', flowers, function (error) {
-    if (error) {
-      return console.log(error);
-    }
-    console.log('База данных успешна обновлена');
-  });
-}
+//   fs.writeFile('./db.json', flowers, function (error) {
+//     if (error) {
+//       return console.log(error);
+//     }
+//     console.log('База данных успешна обновлена');
+//   });
+// }
 
 // Обновление массива с цветами
-function newFlowers() {
-  content = fs.readFileSync('db.json', 'utf8');
-  flowersData = JSON.parse(content);
-  return console.log('Массив для запрсов API обновлен');
-}
+// function newFlowers() {
+//   content = fs.readFileSync('db.json', 'utf8');
+//   flowersData = JSON.parse(content);
+//   return console.log('Массив для запрсов API обновлен');
+// }
 
 // Проверка работы Express
 app.get('/', (req, res) => {
@@ -134,8 +145,10 @@ const getFlowers = async () => {
       await returnPromiseError();
     }
 
-    const result = await response.json();
-    addFlowersBD(result);
+    flowersData = await response.json();
+
+    // const result = await response.json();
+    // addFlowersBD(result);
 
     return console.log('Данные из 1С получены');
   } catch (error) {
@@ -143,7 +156,7 @@ const getFlowers = async () => {
       `При выполнении кода произошла ошибка ${error.name} c текстом ${error.message}, но мы её обработали`
     );
   } finally {
-    setTimeout(newFlowers, 10000);
+    // setTimeout(newFlowers, 10000);
   }
   console.log('Работа сервера продолжена');
 };
@@ -152,6 +165,7 @@ getFlowers();
 
 //Запрашивать API 1С каждые 15 минут
 setInterval(getFlowers, 900000);
+// setInterval(getFlowers, 20000);
 
 const port = 3456;
 
