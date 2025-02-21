@@ -164,7 +164,7 @@ const getFlowers = async () => {
 getFlowers();
 
 //Запрашивать API 1С каждые 15 минут
-setInterval(getFlowers, 900000);
+setInterval(getFlowers, 10800000);
 // setInterval(getFlowers, 20000);
 
 const port = 3456;
